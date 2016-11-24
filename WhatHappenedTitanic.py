@@ -110,3 +110,48 @@ plt.setp(xtickNames, fontsize = 20)
 plt.legend()
 plt.tight_layout()
 plt.show() 
+
+''' What is the distribution of nonsurvivors among the various classes who have family aboard the ship '''
+# Checking for null values
+print df['SibSp'].isnull().value_counts()
+
+# Checking for null values
+print df['Parch'].isnull().value_counts()
+
+# Total number of non survivors in each class
+non_survivors = df[(df['SibSp'] > 0) | (df['Parch'] > 0) & (df['Survived'] == 0)]\
+					.groupby('Pclass')['Survived'].agg('count')
+
+print "Total number of non survivors grouped by class {0}".format(non_survivors)
+
+# Total Passengers in each class
+total_passengers = df.groupby('Pclass')['PassengerId'].count()
+print "Total Passengers in each class {0}".format(total_passengers)
+
+non_survivor_percentage = non_survivors / total_passengers
+
+# Plot of total number of non survivors with families in each class
+fig = plt.figure()
+ax = fig.add_subplot(111)
+rect = ax.bar(non_survivors.index.values.tolist(), non_survivors,
+				color = 'blue', width = 0.5)
+ax.set_ylabel('No. of non survivors')
+ax.set_title('Total number of non survivors with family in each class')
+xTickMarks = non_survivors.index.values.tolist()
+ax.set_xticks(non_survivors.index.values.tolist())
+xtickNames = ax.set_xticklabels(xTickMarks)
+plt.setp(xtickNames, fontsize = 20)
+plt.show()
+
+# Plot of percentage of total number of non survivors with families in each class
+fig = plt.figure()
+ax = fig.add_subplot(111)
+rect = ax.bar(non_survivor_percentage.index.values.tolist(), non_survivor_percentage,
+				color = 'blue', width = 0.5)
+ax.set_ylabel('Non survivor percentage')
+ax.set_title('Percentage of non survivors with family based on class')
+xTickMarks = non_survivor_percentage.index.values.tolist()
+ax.set_xticks(non_survivor_percentage.index.values.tolist())
+xtickNames = ax.set_xticklabels(xTickMarks)
+plt.setp(xtickNames, fontsize = 20)
+plt.show()
